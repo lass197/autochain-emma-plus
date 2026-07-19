@@ -1,0 +1,60 @@
+# Blueprint Render — Autochain Emma+ (plan gratuit)
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Après le premier déploiement :
+# 1. Ouvre l’URL https://autochain-emma-plus.onrender.com (ou celle affichée)
+# 2. Dans Environment, vérifie APP_URL = ton URL https://...
+# 3. Optionnel : php artisan db:seed via Shell Render pour les comptes démo
+
+databases:
+  - name: autochain-db
+    plan: free
+    databaseName: autochain
+    user: autochain
+
+services:
+  - type: web
+    name: autochain-emma-plus
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /up
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_NAME
+        value: Autochain Emma+
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: autochain-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: AUTOCHAIN_ALLOW_SIMULATE_FALLBACK
+        value: "true"
+      - key: AUTOCHAIN_REQUIRE_DOUBLE_SIGNATURE
+        value: "true"
+      - key: AUTOCHAIN_BLOCKCHAIN_NETWORK
+        value: simulate
+      - key: SEED_ON_DEPLOY
+        value: "true"

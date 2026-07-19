@@ -21,6 +21,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (User::query()->where('email', 'admin@autochain.local')->exists()) {
+            $this->command?->info('Seed déjà appliqué — ignoré.');
+
+            return;
+        }
+
         $admin = User::query()->create([
             'name' => 'Lass Super Admin',
             'email' => 'admin@autochain.local',
