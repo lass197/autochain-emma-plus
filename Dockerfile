@@ -8,19 +8,16 @@ COPY vite.config.js ./
 COPY public ./public
 RUN npm run build
 
-# ---------- Vendor PHP ----------
+# ---------- Vendor PHP (code only ; extensions installées au runtime) ----------
 FROM composer:2 AS vendor
 WORKDIR /app
-RUN apk add --no-cache gmp-dev $PHPIZE_DEPS \
-    && docker-php-ext-install gmp
 COPY composer.json composer.lock ./
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
     --no-scripts \
-    --ignore-platform-req=ext-pdo_pgsql \
-    --ignore-platform-req=ext-pcntl
+    --ignore-platform-reqs
 
 # ---------- Runtime PHP 8.3 + Apache ----------
 FROM php:8.3-apache-bookworm
