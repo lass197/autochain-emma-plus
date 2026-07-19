@@ -5,8 +5,8 @@
 @source '../js/**/*.{js,jsx}';
 
 @theme {
-    --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Source Sans 3', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Syne', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
     --color-ink: #0f1c24;
     --color-ink-soft: #3d5160;
     --color-teal: #0f766e;

@@ -6,7 +6,8 @@ RUN npm ci
 COPY resources ./resources
 COPY vite.config.js ./
 COPY public ./public
-RUN npm run build
+# Build assets (sans plugin fonts Bunny — plus fiable sur Render)
+RUN npm run build && test -f public/build/manifest.json
 
 # ---------- Vendor PHP (code only ; extensions installées au runtime) ----------
 FROM composer:2 AS vendor
