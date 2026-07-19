@@ -25,10 +25,12 @@ FROM php:8.3-apache-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libgmp-dev \
         libpq-dev \
+        libsqlite3-dev \
         libzip-dev \
         unzip \
         git \
         curl \
+        pkg-config \
     && docker-php-ext-install gmp pdo_pgsql pdo_sqlite opcache zip \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
