@@ -1,19 +1,16 @@
 # Blueprint Render — Autochain Emma+ (plan gratuit)
-# Une seule base Postgres free est autorisée par compte.
-# Ce Blueprint ne crée PAS de nouvelle DB : utilise ta base free existante.
 #
-# Après création du Blueprint :
-# 1. Dashboard → ta base Postgres free → copie "Internal Database URL"
-# 2. Service web autochain-emma-plus → Environment → colle-la dans DATABASE_URL
-# 3. Définis aussi APP_URL = https://<ton-service>.onrender.com
-# 4. Manual Deploy → Deploy latest commit
+# IMPORTANT avant Deploy :
+# 1. Environment → DATABASE_URL = Internal Database URL de ta Postgres free existante
+# 2. Environment → APP_URL = https://autochain-emma-plus.onrender.com
+# 3. La région du web service DOIT être la même que ta base Postgres
+# 4. Manual Deploy
 
 services:
   - type: web
     name: autochain-emma-plus
     runtime: docker
     plan: free
-    region: frankfurt
     healthCheckPath: /up
     dockerContext: .
     dockerfilePath: ./Dockerfile
@@ -27,22 +24,21 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
-        sync: false
+        value: https://autochain-emma-plus.onrender.com
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
         value: info
       - key: DB_CONNECTION
         value: pgsql
-      # Colle l'Internal Database URL de ta Postgres free existante
       - key: DATABASE_URL
         sync: false
       - key: SESSION_DRIVER
-        value: database
+        value: cookie
       - key: CACHE_STORE
-        value: database
+        value: file
       - key: QUEUE_CONNECTION
-        value: database
+        value: sync
       - key: FILESYSTEM_DISK
         value: local
       - key: AUTOCHAIN_ALLOW_SIMULATE_FALLBACK
@@ -53,3 +49,5 @@ services:
         value: simulate
       - key: SEED_ON_DEPLOY
         value: "true"
+      - key: PORT
+        value: "10000"
