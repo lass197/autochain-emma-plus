@@ -1,15 +1,13 @@
-# Blueprint Render — Autochain Emma+ (gratuit)
-#
-# Avant Deploy, dans Environment :
-# - DATABASE_URL = Internal Database URL (même région que le service)
-# - APP_URL = https://autochain-emma-plus.onrender.com
+# Autochain Emma+ — Render Free
+# Démarre même sans DATABASE_URL (SQLite temporaire).
+# Optionnel : ajoute DATABASE_URL (Internal URL Postgres) pour une DB persistante.
 
 services:
   - type: web
     name: autochain-emma-plus
     runtime: docker
     plan: free
-    healthCheckPath: /up
+    healthCheckPath: /health.php
     dockerContext: .
     dockerfilePath: ./Dockerfile
     envVars:
@@ -25,10 +23,6 @@ services:
         value: https://autochain-emma-plus.onrender.com
       - key: LOG_CHANNEL
         value: stderr
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DATABASE_URL
-        sync: false
       - key: SESSION_DRIVER
         value: cookie
       - key: CACHE_STORE
@@ -41,3 +35,6 @@ services:
         value: "true"
       - key: PORT
         value: "10000"
+      # Optionnel — Internal Database URL Postgres (même région)
+      - key: DATABASE_URL
+        sync: false

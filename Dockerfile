@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
         git \
         curl \
-    && docker-php-ext-install gmp pdo_pgsql opcache zip \
+    && docker-php-ext-install gmp pdo_pgsql pdo_sqlite opcache zip \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
