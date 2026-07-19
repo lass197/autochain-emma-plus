@@ -1,10 +1,8 @@
-# Blueprint Render — Autochain Emma+ (plan gratuit)
+# Blueprint Render — Autochain Emma+ (gratuit)
 #
-# IMPORTANT avant Deploy :
-# 1. Environment → DATABASE_URL = Internal Database URL de ta Postgres free existante
-# 2. Environment → APP_URL = https://autochain-emma-plus.onrender.com
-# 3. La région du web service DOIT être la même que ta base Postgres
-# 4. Manual Deploy
+# Avant Deploy, dans Environment :
+# - DATABASE_URL = Internal Database URL (même région que le service)
+# - APP_URL = https://autochain-emma-plus.onrender.com
 
 services:
   - type: web
@@ -27,8 +25,6 @@ services:
         value: https://autochain-emma-plus.onrender.com
       - key: LOG_CHANNEL
         value: stderr
-      - key: LOG_LEVEL
-        value: info
       - key: DB_CONNECTION
         value: pgsql
       - key: DATABASE_URL
@@ -39,15 +35,9 @@ services:
         value: file
       - key: QUEUE_CONNECTION
         value: sync
-      - key: FILESYSTEM_DISK
-        value: local
-      - key: AUTOCHAIN_ALLOW_SIMULATE_FALLBACK
-        value: "true"
-      - key: AUTOCHAIN_REQUIRE_DOUBLE_SIGNATURE
-        value: "true"
-      - key: AUTOCHAIN_BLOCKCHAIN_NETWORK
-        value: simulate
       - key: SEED_ON_DEPLOY
+        value: "true"
+      - key: AUTOCHAIN_ALLOW_SIMULATE_FALLBACK
         value: "true"
       - key: PORT
         value: "10000"

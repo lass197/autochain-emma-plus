@@ -1,5 +1,5 @@
-# Stage 1 — build frontend Vite/React
-FROM node:22-alpine AS frontend
+# ---------- Frontend ----------
+FROM node:22-bookworm-slim AS frontend
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -8,39 +8,62 @@ COPY vite.config.js ./
 COPY public ./public
 RUN npm run build
 
-# Stage 2 — Laravel + Nginx + PHP-FPM
-FROM richarvey/nginx-php-fpm:3.1.6
+# ---------- Vendor PHP ----------
+FROM composer:2 AS vendor
+WORKDIR /app
+RUN apk add --no-cache gmp-dev $PHPIZE_DEPS \
+    && docker-php-ext-install gmp
+COPY composer.json composer.lock ./
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-scripts \
+    --ignore-platform-req=ext-pdo_pgsql \
+    --ignore-platform-req=ext-pcntl
 
-# gmp (Web3) + pgsql
-RUN apk add --no-cache gmp gmp-dev postgresql-dev $PHPIZE_DEPS \
-    && docker-php-ext-install gmp pdo_pgsql \
-    && apk del --no-network gmp-dev postgresql-dev $PHPIZE_DEPS
+# ---------- Runtime PHP 8.3 + Apache ----------
+FROM php:8.3-apache-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgmp-dev \
+        libpq-dev \
+        libzip-dev \
+        unzip \
+        git \
+        curl \
+    && docker-php-ext-install gmp pdo_pgsql opcache zip \
+    && a2enmod rewrite headers \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && printf '%s\n' \
+        '<Directory /var/www/html/public>' \
+        '    AllowOverride All' \
+        '    Require all granted' \
+        '</Directory>' \
+        > /etc/apache2/conf-available/laravel.conf \
+    && a2enconf laravel
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
-    && rm -rf /root/.composer/cache
+COPY --from=vendor /app/vendor ./vendor
+COPY --from=vendor /app/composer.json /app/composer.lock ./
+COPY . .
+COPY --from=frontend /app/public/build ./public/build
 
-COPY . /var/www/html
-COPY --from=frontend /app/public/build /var/www/html/public/build
-
-RUN composer dump-autoload --optimize --no-interaction \
-    && chmod +x /var/www/html/scripts/*.sh \
-    && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
-    && chmod -R ug+rwx storage bootstrap/cache
-
-# richarvey/nginx-php-fpm — Render injecte PORT=10000
-ENV SKIP_COMPOSER=1
-ENV WEBROOT=/var/www/html/public
-ENV PHP_ERRORS_STDERR=1
-ENV RUN_SCRIPTS=1
-ENV REAL_IP_HEADER=1
-ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV PORT=10000
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chmod -R ug+rwx storage bootstrap/cache \
+    && chmod +x scripts/render-start.sh \
+    && php artisan package:discover --ansi || true
 
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 ENV LOG_CHANNEL=stderr
+ENV PORT=10000
 
-CMD ["/start.sh"]
+EXPOSE 10000
+
+CMD ["bash", "scripts/render-start.sh"]
