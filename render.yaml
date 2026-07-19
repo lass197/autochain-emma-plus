@@ -1,16 +1,12 @@
 # Blueprint Render — Autochain Emma+ (plan gratuit)
-# Docs: https://render.com/docs/blueprint-spec
+# Une seule base Postgres free est autorisée par compte.
+# Ce Blueprint ne crée PAS de nouvelle DB : utilise ta base free existante.
 #
-# Après le premier déploiement :
-# 1. Ouvre l’URL https://autochain-emma-plus.onrender.com (ou celle affichée)
-# 2. Dans Environment, vérifie APP_URL = ton URL https://...
-# 3. Optionnel : php artisan db:seed via Shell Render pour les comptes démo
-
-databases:
-  - name: autochain-db
-    plan: free
-    databaseName: autochain
-    user: autochain
+# Après création du Blueprint :
+# 1. Dashboard → ta base Postgres free → copie "Internal Database URL"
+# 2. Service web autochain-emma-plus → Environment → colle-la dans DATABASE_URL
+# 3. Définis aussi APP_URL = https://<ton-service>.onrender.com
+# 4. Manual Deploy → Deploy latest commit
 
 services:
   - type: web
@@ -38,10 +34,9 @@ services:
         value: info
       - key: DB_CONNECTION
         value: pgsql
+      # Colle l'Internal Database URL de ta Postgres free existante
       - key: DATABASE_URL
-        fromDatabase:
-          name: autochain-db
-          property: connectionString
+        sync: false
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
