@@ -1,0 +1,191 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../js/**/*.{js,jsx}';
+
+@theme {
+    --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+    --color-ink: #0f1c24;
+    --color-ink-soft: #3d5160;
+    --color-teal: #0f766e;
+    --color-teal-bright: #14b8a6;
+    --color-sand: #e8efe9;
+    --color-mist: #f3f7f5;
+    --color-signal: #c2410c;
+}
+
+:root {
+    color: var(--color-ink);
+    background: var(--color-mist);
+    font-family: var(--font-sans);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+.font-display {
+    font-family: var(--font-display);
+}
+
+.ac-shell {
+    min-height: 100vh;
+    background:
+        radial-gradient(1200px 500px at 10% -10%, rgba(20, 184, 166, 0.16), transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, rgba(15, 28, 36, 0.08), transparent 50%),
+        linear-gradient(180deg, #f7fbf9 0%, #eef4f1 100%);
+}
+
+.ac-hero {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    color: #f5fffc;
+    background:
+        linear-gradient(120deg, rgba(8, 24, 28, 0.88) 10%, rgba(15, 118, 110, 0.55) 55%, rgba(8, 24, 28, 0.75) 100%),
+        url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.05'%3E%3Cpath d='M0 80h160M80 0v160'/%3E%3C/g%3E%3C/svg%3E"),
+        radial-gradient(circle at 70% 40%, #1f9b8d 0%, #0b1d22 55%, #071316 100%);
+}
+
+.ac-hero::after {
+    content: '';
+    position: absolute;
+    inset: auto -10% -20% 35%;
+    height: 70%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.12), transparent 65%);
+    animation: ac-glow 8s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+.ac-panel {
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(15, 28, 36, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.ac-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 0;
+    border-radius: 0.35rem;
+    padding: 0.7rem 1.15rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+}
+
+.ac-btn:hover {
+    transform: translateY(-1px);
+}
+
+.ac-btn-primary {
+    background: var(--color-teal);
+    color: white;
+}
+
+.ac-btn-primary:hover {
+    background: #0d9488;
+}
+
+.ac-btn-ghost {
+    background: transparent;
+    color: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.ac-input {
+    width: 100%;
+    border: 1px solid rgba(15, 28, 36, 0.14);
+    background: #fff;
+    border-radius: 0.35rem;
+    padding: 0.7rem 0.85rem;
+    outline: none;
+}
+
+.ac-input:focus {
+    border-color: var(--color-teal);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
+}
+
+.ac-fade-up {
+    animation: ac-fade-up 0.7s ease both;
+}
+
+.ac-fade-up-delay {
+    animation: ac-fade-up 0.8s ease 0.15s both;
+}
+
+.ac-timeline-item {
+    position: relative;
+    padding-left: 1.4rem;
+}
+
+.ac-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    top: 0.45rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--color-teal-bright);
+}
+
+.ac-timeline-item::after {
+    content: '';
+    position: absolute;
+    left: 0.45rem;
+    top: 1.1rem;
+    bottom: -0.85rem;
+    width: 1px;
+    background: rgba(15, 118, 110, 0.25);
+}
+
+.ac-timeline-item:last-child::after {
+    display: none;
+}
+
+@keyframes ac-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ac-glow {
+    from {
+        opacity: 0.45;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0.9;
+        transform: translateX(-4%);
+    }
+}
+
+@media (max-width: 768px) {
+    .ac-sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        transform: translateX(-105%);
+        z-index: 40;
+        transition: transform 0.25s ease;
+    }
+
+    .ac-sidebar.open {
+        transform: translateX(0);
+    }
+}
